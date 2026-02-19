@@ -1,13 +1,18 @@
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
 
-const organizationSchema = new Schema(
+const projectSchema = new Schema(
   {
     name: {
       type: String,
       required: [true, "Name is required"],
     },
-    ownerId: {
+    organization: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Organization",
+    },
+    createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
@@ -16,6 +21,6 @@ const organizationSchema = new Schema(
   { timestamps: true },
 );
 
-const Organization = mongoose.model("Organization", organizationSchema);
+const Project = mongoose.model("Project", projectSchema);
 
-export default Organization;
+export default Project;
