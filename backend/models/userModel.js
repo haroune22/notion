@@ -6,20 +6,19 @@ const userSchema = new Schema(
     name: {
       type: String,
       required: [true, "Name is required"],
+      trim: true,
     },
     email: {
       type: String,
       required: [true, "Email is required"],
       unique: true,
+      lowercase: true,
+      trim: true,
     },
     password: {
       type: String,
       required: true,
-    },
-    role: {
-      type: String,
-      enum: ["user", "owner", "admin", "member"],
-      default: "user",
+      minlength: 6,
     },
   },
   { timestamps: true },
