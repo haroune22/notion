@@ -1,5 +1,5 @@
 import organization from "../models/organizationModel.js";
-import organizationMember from "../models/organizationMember.js";
+import organizationMember from "../models/organizationMemberModel.js";
 
 export const CreateOrganization = async (req, res) => {
   const userId = req.user._id;
@@ -16,7 +16,7 @@ export const CreateOrganization = async (req, res) => {
     });
 
     if (newOrg) {
-      const orgMember = await organizationMember.create({
+      await organizationMember.create({
         organization: newOrg._id,
         role: "manager",
         user: userId,
@@ -52,7 +52,7 @@ export const deleteOrganization = async (req, res) => {
     if (!membership || membership.role !== "manager") {
       return res.status(403).json({ message: "not authorized to delete org" });
     }
-
+    // todo: delete all members related to this organization with projects and tasks
     await organization.findByIdAndDelete(org._id);
 
     return res.status(200).json({ message: "organization deleted" });

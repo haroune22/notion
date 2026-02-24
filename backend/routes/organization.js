@@ -4,10 +4,14 @@ import {
   deleteOrganization,
 } from "../controllers/organizationController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
+import { CreateProject, getProjects } from "../controllers/projectController.js";
 
 const router = express.Router();
 
-router.post("/create", authMiddleware, CreateOrganization);
-router.post("/delete/:id", authMiddleware, deleteOrganization);
+router.post("/", authMiddleware, CreateOrganization);
+router.delete("/:orgId", authMiddleware, deleteOrganization);
+// create project:
+router.post("/:orgId/projects", authMiddleware, CreateProject);
+router.get('/:orgId/projects', authMiddleware, getProjects)
 
 export default router;
