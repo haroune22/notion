@@ -8,7 +8,7 @@ const projectMemberSchema = new Schema(
       required: true,
       ref: "User",
     },
-    Project: {
+    project: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "Project",
