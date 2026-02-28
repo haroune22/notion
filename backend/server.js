@@ -1,10 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+import cookieParser from "cookie-parser";
+
 import userRoute from "./routes/userRoute.js";
 import organizationRoute from "./routes/organization.js";
 import projectRoute from "./routes/project.js";
-import cookieParser from "cookie-parser";
+import taskRouter from './routes/task.js'
 
 dotenv.config();
 
@@ -21,6 +23,7 @@ app.use(cookieParser());
 app.use("/api/auth", userRoute);
 app.use("/api/organization", organizationRoute);
 app.use("/api/project", projectRoute);
+app.use("/api/task", taskRouter);
 
 app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}`);
