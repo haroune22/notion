@@ -17,6 +17,7 @@ router.get('/:id/task', authMiddleware, getTasks)
 
 router.post('/:id/task', authMiddleware, addTask)
 router.delete('/:id/task/:taskId', authMiddleware, deleteTask)
+
 // update task: for admin update all fields
 
 export default router;
