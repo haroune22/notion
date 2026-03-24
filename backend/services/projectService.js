@@ -1,5 +1,5 @@
 import ProjectMember from "../models/projectMemberModel"
-import Task from "../models/taskModel"
+import OrganizationMember from "../models/organizationMemberModel"
 import Project from "../models/projectModel"
 import { DeleteTasksService } from "./taskService"
 
@@ -15,22 +15,35 @@ export const deleteProjectService = async (userId, projectId) => {
     }
 
     // Delete all tasks associated with the project
-    await DeleteTasksService(userId, projectId)
+    await DeleteTasksService(projectId)
+
+    await ProjectMember.deleteMany({
+        project: projectId,
+    })
 
     // Delete the project
-    await Project.findOneAndDelete({
-        _id: projectId
-    })
+    await Project.findByIdAndDelete(projectId)
 }
 
 // delete all projects for organization:
 export const deleteProjectsService = async (userId, organizationId) => {
+
+    const orgAdmin = await OrganizationMember.findOne({
+        organization: organizationId,
+        user: userId,
+    })
+
+    if(!orgAdmin || orgAdmin.role !== 'manager'){
+        throw new Error('not allowed to delete projects of this organization')
+    }
+
     // find all projects for the organization
     const projects = await Project.find({
         organization: organizationId,
     })
+
     // delete each project and its associated tasks
-    for (const project of projects) {
-        await deleteProjectService(userId, project._id)
-    }
+    await Promise.all(
+        projects.map(p => deleteProjectService(userId, p._id))
+    );
 }
