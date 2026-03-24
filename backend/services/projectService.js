@@ -29,7 +29,6 @@ export const deleteProjectsService = async (userId, organizationId) => {
     const projects = await Project.find({
         organization: organizationId,
     })
-    
     // delete each project and its associated tasks
     for (const project of projects) {
         await deleteProjectService(userId, project._id)
