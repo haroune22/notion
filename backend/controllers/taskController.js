@@ -1,5 +1,5 @@
 import ProjectMember from "../models/projectMemberModel.js";
-import Task from "../models/taskModel";
+import Task from "../models/taskModel.js";
 
 export const getTask = async (req, res) => {
   const userId = req.user._id;

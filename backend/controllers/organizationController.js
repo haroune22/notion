@@ -1,5 +1,11 @@
 import organization from "../models/organizationModel.js";
 import organizationMember from "../models/organizationMemberModel.js";
+import OrganizationMember from "../models/organizationMemberModel.js";
+import { generateToken } from "./userController.js";
+import invite from "../models/inviteModel.js";
+import crypto from "crypto";
+import User from "../models/userModel.js";
+
 
 export const CreateOrganization = async (req, res) => {
   const userId = req.user._id;
@@ -84,3 +90,71 @@ export const getOrganization = async (req, res) => {
     console.log(error);
   }
 };
+
+
+export const CreateInvitation = async (req, res) => {
+
+  const userId = req.user._id;
+  const orgId = req.params.orgId;
+  const { email } = req.body
+
+  if(!email){
+    return res.status(400).json({ message: 'email required '})
+  }
+
+  if(!orgId) {
+    return res.status(400).json({ message: "Organization ID is required" });
+  }
+
+  try {
+    const orgManager = await OrganizationMember.findOne({
+      organization: orgId,
+      user: userId,
+    })
+
+    if(!orgManager || orgManager.role !== 'manager'){
+      return res.status(403).json({ message: 'not authorized to send invites'})
+    }
+
+    const existingInvite = await invite.findOne({
+      email,
+      organization: orgId,
+      status: "pending",
+    });
+
+    if (existingInvite) {
+      return res.status(400).json({ message: "User already invited" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (user) {
+      const isMember = await OrganizationMember.findOne({
+        organization: orgId,
+        user: user._id,
+      });
+
+      if (isMember) {
+        return res.status(400).json({ message: "User already in organization" });
+      }
+    }
+    // token is the invite link:
+    
+    const token = crypto.randomBytes(32).toString("hex");
+
+    //create invite in db
+    await invite.create({
+      email,
+      token,
+      organization: orgId,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    })
+
+    //sending email with link
+    // const inviteLink = `${process.env.FRONTEND_URL}/accept-invite?token=${token}`;
+    return res.json({ inviteLink: `http://localhost:5173/invite/${token}` })
+  } catch (error) {
+    res.status(500).json({ message: "Error creating invitation", error: error.message });
+    console.log(error);
+  }
+}

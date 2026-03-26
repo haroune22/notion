@@ -1,6 +1,6 @@
 import project from "../models/projectModel.js";
 import projectMember from "../models/projectMemberModel.js";
-import organizationMember from "../models";
+import organizationMember from "../models/organizationMemberModel.js";
 
 export const CreateProject = async (req, res) => {
   const userId = req.user._id;

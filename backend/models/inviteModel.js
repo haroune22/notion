@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import Schema from 'mongoose';
+import mongoose from "mongoose";
+import { Schema } from "mongoose";
 
 const inviteSchema = new Schema({
   email: {
@@ -18,7 +18,7 @@ const inviteSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "accepted", "رفض"],
+    enum: ["pending", "accepted", "declined"],
     default: "pending",
   },
   expiresAt: {
@@ -27,6 +27,6 @@ const inviteSchema = new Schema({
   },
 }, { timestamps: true });
 
-const Invite = mongoose.model('Invite', inviteSchema);
+const invite = mongoose.model('Invite', inviteSchema);
 
-export default Invite;
+export default invite;
