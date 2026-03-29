@@ -3,3 +3,6 @@ env
 node_modules
 /node_modules
 .env.local
+todo.txt
+/todo.txt
+todo
