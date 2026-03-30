@@ -141,14 +141,31 @@ export const getProject = async (req, res) => {
 };
 
 export const getProjectMembers = async (req, res) => {
-  
+
   const userId = req.user._id
   const projectId = req.params.id
 
   try {
-    
+    const isAdmin = await projectMember.findOne({
+      user: userId,
+      project: projectId,
+    })
+
+    if(!isAdmin || isAdmin.role !== 'admin'){
+      return res.status(403).json({ message: 'unauthorized'})
+    }
+
+    //get all projectMembers
+    const projectMembers = await projectMember.find({
+      project: projectId,
+      role: { $ne: "admin" }, // exclude admin from the list
+    }).populate('user', 'name email')
+
+    return res.status(200).json({message: 'project members retrieved', projectMembers})
+
   } catch (error) {
-    
+    res.status(500).json({message: 'internal server error'})
+    console.log(error)
   }
 }
 
@@ -175,18 +192,9 @@ export const addMemberToProject = async (req, res) => {
       return res.status(403).json({ message: 'not authorized'})
     }
 
-    const organization = await Organization.findById(project.organization)
-
-    if(!organization){
-      return res.status(401).json({message: 'organization not found'})
-    }
-
     //check if user is in organization
     //first get the user
-    const user = await User.findOne({
-      email,
-      name,
-    })
+    const user = await User.findOne({ email })
 
     if(!user){
       return res.status(403).json({ message: 'user does not exist'})
@@ -194,7 +202,7 @@ export const addMemberToProject = async (req, res) => {
 
     const isOrgMember = await organizationMember.findOne({
       user: user._id,
-      organization: organization._id
+      organization: project.organization
     })
 
     if(!isOrgMember){
@@ -208,7 +216,7 @@ export const addMemberToProject = async (req, res) => {
     })
 
     if(isProjectMember){
-      return res.status(403).json({ message: 'user is already a project member'})
+      return res.status(409).json({ message: 'user is already a project member'})
     }
 
     //adding user to project
@@ -247,7 +255,7 @@ export const removeMemberFromProject = async (req, res) => {
       return res.status(403).json({ message: 'not authorized'})
     }
 
-    //firs get the user
+    //first get the user
     const user = await User.findOne({
       email,
       name,
@@ -255,6 +263,12 @@ export const removeMemberFromProject = async (req, res) => {
     
     if(!user){
       return res.status(403).json({ message: 'user does not exist'})
+    }
+
+    if(user._id.toString() === userId.toString()){
+      return res.status(400).json({
+        message: "admin cannot remove himself"
+      })
     }
     
     // check if user is already a member in this project
@@ -268,7 +282,10 @@ export const removeMemberFromProject = async (req, res) => {
     }
 
     //deleting user from project
-    await isProjectMember.deleteOne() //or await isProjectMember.delete() ??
+   await projectMember.deleteOne({
+    user: user._id,
+    project: projectId
+  })
     
     return res.status(200).json({message: 'user deleted from project'})
   } catch (error) {
