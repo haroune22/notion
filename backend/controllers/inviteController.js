@@ -1,6 +1,6 @@
-import invite from '../models/inviteModel'
-import User from '../models/userModel';
-import OrganizationMember from '../models/organizationMemberModel';
+import invite from '../models/inviteModel.js'
+import User from '../models/userModel.js';
+import OrganizationMember from '../models/organizationMemberModel.js';
 
 export const inviteAccept = async (req, res) => {
     const userId = req.user._id;

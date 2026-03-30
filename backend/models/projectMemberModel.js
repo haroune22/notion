@@ -27,7 +27,7 @@ projectMemberSchema.index(
 );
 
 const ProjectMember = mongoose.model(
-  "ProjectMember",
+  "projectMember",
   projectMemberSchema,
 );
 

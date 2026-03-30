@@ -1,6 +1,9 @@
 import project from "../models/projectModel.js";
 import projectMember from "../models/projectMemberModel.js";
 import organizationMember from "../models/organizationMemberModel.js";
+import Organization from "../models/organizationModel.js";
+import Project from "../models/projectModel.js";
+import User from "../models/userModel.js";
 
 export const CreateProject = async (req, res) => {
   const userId = req.user._id;
@@ -136,3 +139,140 @@ export const getProject = async (req, res) => {
       .json({ message: "Error retrieving projects", error: error.message });
   }
 };
+
+export const getProjectMembers = async (req, res) => {
+  
+  const userId = req.user._id
+  const projectId = req.params.id
+
+  try {
+    
+  } catch (error) {
+    
+  }
+}
+
+export const addMemberToProject = async (req, res) => {
+
+  const userId = req.user._id
+  const projectId = req.params.id
+  const { name, email } = req.body
+
+  try {
+    const project = await Project.findById(projectId)
+
+    if(!project){
+      return res.status(400).json({message: 'project not found'})
+    }
+
+    //check if user is admin
+    const isAdmin = await projectMember.findOne({
+      user: userId,
+      project: projectId,
+    })
+
+    if(!isAdmin || isAdmin.role !== 'admin'){
+      return res.status(403).json({ message: 'not authorized'})
+    }
+
+    const organization = await Organization.findById(project.organization)
+
+    if(!organization){
+      return res.status(401).json({message: 'organization not found'})
+    }
+
+    //check if user is in organization
+    //first get the user
+    const user = await User.findOne({
+      email,
+      name,
+    })
+
+    if(!user){
+      return res.status(403).json({ message: 'user does not exist'})
+    }
+
+    const isOrgMember = await organizationMember.findOne({
+      user: user._id,
+      organization: organization._id
+    })
+
+    if(!isOrgMember){
+      return res.status(403).json({ message: 'user is not in organization'})
+    }
+    
+    // check if user is already a member in this project
+    const isProjectMember = await projectMember.findOne({
+      user: user._id,
+      project: projectId,
+    })
+
+    if(isProjectMember){
+      return res.status(403).json({ message: 'user is already a project member'})
+    }
+
+    //adding user to project
+    const newProjectMember = await projectMember.create({
+      user: user._id,
+      project: projectId,
+      role: 'member'
+    })
+    
+    return res.status(200).json({message: 'user added to project', newProjectMember})
+  } catch (error) {
+    res.status(500).json({message: 'internal server error'})
+    console.log(error)
+  }
+}
+
+export const removeMemberFromProject = async (req, res) => {
+
+  const userId = req.user._id
+  const projectId = req.params.id
+  const { name, email } = req.body
+
+  try {
+    const project = await Project.findById(projectId)
+
+    if(!project){
+      return res.status(400).json({message: 'project not found'})
+    }
+    
+    const isAdmin = await projectMember.findOne({
+      user: userId,
+      project: projectId,
+    })
+
+    if(!isAdmin || isAdmin.role !== 'admin'){
+      return res.status(403).json({ message: 'not authorized'})
+    }
+
+    //firs get the user
+    const user = await User.findOne({
+      email,
+      name,
+    })
+    
+    if(!user){
+      return res.status(403).json({ message: 'user does not exist'})
+    }
+    
+    // check if user is already a member in this project
+    const isProjectMember = await projectMember.findOne({
+      user: user._id,
+      project: projectId,
+    })
+
+    if(!isProjectMember){
+      return res.status(403).json({ message: 'user is not a project member'})
+    }
+
+    //deleting user from project
+    await isProjectMember.deleteOne() //or await isProjectMember.delete() ??
+    
+    return res.status(200).json({message: 'user deleted from project'})
+  } catch (error) {
+    res.status(500).json({message: 'internal server error'})
+    console.log(error)
+  }
+}

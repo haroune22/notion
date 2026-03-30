@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  addMemberToProject,
   deleteProject,
   getProject,
 } from "../controllers/projectController.js";
@@ -10,6 +11,7 @@ const router = express.Router();
 
 router.delete("/:id", authMiddleware, deleteProject);
 router.get('/my', authMiddleware, getProject)
+router.post('/:id/addMember', authMiddleware, addMemberToProject)
 // todo: update project
 
 // get the admin tasks that he created in the project

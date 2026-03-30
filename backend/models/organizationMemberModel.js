@@ -28,7 +28,7 @@ organizationMemberSchema.index(
 );
 
 const OrganizationMember = mongoose.model(
-  "OrganizationMember",
+  "organizationMember",
   organizationMemberSchema,
 );
 

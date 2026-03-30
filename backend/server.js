@@ -7,6 +7,7 @@ import userRoute from "./routes/userRoute.js";
 import organizationRoute from "./routes/organization.js";
 import projectRoute from "./routes/project.js";
 import taskRouter from './routes/task.js'
+import inviteRouter from './routes/invite.js'
 
 dotenv.config();
 
@@ -24,6 +25,8 @@ app.use("/api/auth", userRoute);
 app.use("/api/organization", organizationRoute);
 app.use("/api/project", projectRoute);
 app.use("/api/task", taskRouter);
+app.use("/api/invite", inviteRouter);
+
 
 app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}`);
