@@ -173,7 +173,7 @@ export const addMemberToProject = async (req, res) => {
 
   const userId = req.user._id
   const projectId = req.params.id
-  const { name, email } = req.body
+  const { email } = req.body
 
   try {
     const project = await Project.findById(projectId)
@@ -239,6 +239,10 @@ export const removeMemberFromProject = async (req, res) => {
   const projectId = req.params.id
   const { name, email } = req.body
 
+  if(!name || !email) {
+    return res.status(400).json({ message: 'name and email are required'})
+  }
+
   try {
     const project = await Project.findById(projectId)
 
@@ -288,6 +292,131 @@ export const removeMemberFromProject = async (req, res) => {
   })
     
     return res.status(200).json({message: 'user deleted from project'})
+  } catch (error) {
+    res.status(500).json({message: 'internal server error'})
+    console.log(error)
+  }
+}
+
+export const promoteMember = async (req, res) => {
+
+  const userId = req.user._id
+  const projectId = req.params.id
+  const { name, email } = req.body
+
+  if(!name || !email) {
+    return res.status(400).json({ message: 'name and email are required'})
+  }
+
+  try {
+    const project = await Project.findById(projectId)
+
+    if(!project){
+      return res.status(400).json({message: 'project not found'})
+    }
+
+    const isAdmin = await projectMember.findOne({
+      user: userId,
+      project: projectId,
+    })
+
+    if(!isAdmin || isAdmin.role !== 'admin'){
+      return res.status(403).json({ message: 'not authorized'})
+    }
+    //first get the user
+    const user = await User.findOne({
+      email,
+      name,
+    })
+    
+    if(!user){
+      return res.status(403).json({ message: 'user does not exist'})
+    }
+
+    if(user._id.toString() === userId.toString()){
+      return res.status(400).json({
+        message: "admin cannot promote himself"
+      })
+    }
+
+    // check if user is already a member in this project
+    const isProjectMember = await projectMember.findOne({
+      user: user._id,
+      project: projectId,
+    })
+    
+    if(!isProjectMember || isProjectMember.role === 'admin'){
+      return res.status(403).json({ message: 'user is not a project member'})
+    }
+
+    //updating user role to admin
+    isProjectMember.role = 'admin'
+    await isProjectMember.save()
+
+    return res.status(200).json({message: 'user promoted to admin'})
+  } catch (error) {
+    res.status(500).json({message: 'internal server error'})
+    console.log(error)
+  }
+}
+
+export const demoteMember = async (req, res) => {
+
+  const userId = req.user._id
+  const projectId = req.params.id
+  const { name, email } = req.body
+
+  if(!name || !email) {
+    return res.status(400).json({ message: 'name and email are required'})
+  }
+
+  try {
+   const project = await Project.findById(projectId)
+
+    if(!project){
+      return res.status(400).json({message: 'project not found'})
+    }
+    
+    const isAdmin = await projectMember.findOne({
+      user: userId,
+      project: projectId,
+    })
+
+    if(!isAdmin || isAdmin.role !== 'admin'){
+      return res.status(403).json({ message: 'not authorized'})
+    }
+
+    //first get the user
+    const user = await User.findOne({
+      email,
+      name,
+    })
+
+    if(!user){
+      return res.status(403).json({ message: 'user does not exist'})
+    }
+    
+    if(user._id.toString() === userId.toString()){
+      return res.status(400).json({
+        message: "admin cannot demote himself"
+      })
+    }
+
+    // check if user is already a member in this project
+    const isProjectMember = await projectMember.findOne({
+      user: user._id,
+      project: projectId,
+    })
+
+    if(!isProjectMember || isProjectMember.role !== 'admin'){
+      return res.status(403).json({ message: 'user is not a project member'})
+    }
+
+    //updating user role to member
+    isProjectMember.role = 'member'
+    await isProjectMember.save()
+
+    return res.status(200).json({message: 'user demoted to member'})
   } catch (error) {
     res.status(500).json({message: 'internal server error'})
     console.log(error)

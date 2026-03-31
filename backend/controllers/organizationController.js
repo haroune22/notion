@@ -1,7 +1,6 @@
 import organization from "../models/organizationModel.js";
 import organizationMember from "../models/organizationMemberModel.js";
 import OrganizationMember from "../models/organizationMemberModel.js";
-import { generateToken } from "./userController.js";
 import invite from "../models/inviteModel.js";
 import crypto from "crypto";
 import User from "../models/userModel.js";
@@ -139,7 +138,6 @@ export const CreateInvitation = async (req, res) => {
       }
     }
     // token is the invite link:
-    
     const token = crypto.randomBytes(32).toString("hex");
 
     //create invite in db
