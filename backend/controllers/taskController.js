@@ -1,5 +1,6 @@
 import ProjectMember from "../models/projectMemberModel.js";
-import Task from "../models/taskModel.js";
+import Project from "../models/projectModel.js";
+import Task, { taskStatusEnum } from "../models/taskModel.js";
 
 export const getTask = async (req, res) => {
   const userId = req.user._id;
@@ -9,7 +10,7 @@ export const getTask = async (req, res) => {
     const tasks = await Task.find({ assignedTo: userId });
 
     if (!tasks || tasks.length === 0) {
-      return res.status(403).json({ message: "no tasks found" });
+      return res.status(404).json({ message: "no tasks found" });
     }
 
     res.status(200).json(tasks);
@@ -24,13 +25,13 @@ export const getTasks = async (req, res) => {
   const projectId = req.params._id;
 
   try {
-    const projectAdmin = await ProjectMember.findOne({
+    const member = await ProjectMember.findOne({
       project: projectId,
-      user: userId,
-    });
+      user: userId
+    })
 
-    if (!projectAdmin || projectAdmin.role !== "admin") {
-      return res.status(403).json({ message: "unauthorized to get tasks" });
+    if(!member){
+      return res.status(403).json({ message: "not a project member" })
     }
 
     const tasks = await Task.find({
@@ -54,8 +55,14 @@ export const addTask = async (req, res) => {
 
   const { title, description, assignedTo, dueDate, priority } = req.body;
 
-  if (!title || !description || !assignedTo || !dueDate || !priority) {
+  if (!title || !description || !assignedTo || !dueDate) {
     return res.status(400).json({ message: "all fields required" });
+  }
+
+  const priorityEnum = ["low", "medium", "high"]
+
+  if(!priorityEnum.includes(priority)){
+    return res.status(400).json({message:"invalid priority"})
   }
 
   try {
@@ -125,4 +132,79 @@ export const deleteTask = async (req, res) => {
         console.log(error);
         return res.status(500).json({ message: "error deleting task" });
     }
+}
+
+export const updateTaskByAdmin = async (req, res) => {
+
+  const userId = req.user._id
+  const projectId = req.params.id
+  const taskId = req.params.taskId
+  const { title, description, status, priority, assignedTo, dueDate } = req.body
+
+  try {
+    const project = await Project.findById(projectId)
+
+    if(!project){
+      return res.status(403).json({ message: "not found "})
+    }
+
+    const isAdmin = await ProjectMember.findOne({
+      project: projectId,
+      user: userId,
+    })
+
+    if(!isAdmin || isAdmin.role !== 'admin'){
+      return res.status(409).json({ message: 'not authorized'})
+    }
+
+    const task = await Task.findById(taskId)
+
+    if(!task || task.project.toString() !== projectId.toString()){
+      return res.status(402).json({message: "task not found"})
+    }
+
+    const updatedTask = await Task.findByIdAndUpdate(taskId, {
+      title,
+      description,
+      dueDate,
+      status,
+      priority,
+      assignedTo
+    },{new: true})
+
+    return res.status(200).json({message: 'task updated', updatedTask})
+
+  } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "error deleting task" });
+  }
+}
+
+export const updateTask = async (req, res) => {
+
+  const userId = req.user._id
+  const taskId = req.params.taskId
+  const { status } = req.body
+
+  if(!status || !taskStatusEnum.includes(status)){
+    return res.status(403).json({ message: 'status required '})
+  }
+
+  try {
+    const task = await Task.findById(taskId)
+
+    if(!task || task.assignedTo.toString() !== userId.toString()){
+      return res.status(402).json({message: "task not found"})
+    }
+
+    const updatedTask = await Task.findByIdAndUpdate(taskId, {
+      status,
+    }, {new: true})
+
+    return res.status(200).json({message: 'task updated', updatedTask})
+
+  } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "error deleting task" });
+  }
 }

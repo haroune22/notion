@@ -9,7 +9,7 @@ import {
   removeMemberFromProject,
 } from "../controllers/projectController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
-import { addTask, deleteTask, getTasks } from "../controllers/taskController.js";
+import { addTask, deleteTask, getTasks, updateTask, updateTaskByAdmin } from "../controllers/taskController.js";
 
 
 const router = express.Router();
@@ -31,6 +31,8 @@ router.get('/:id/task', authMiddleware, getTasks)
 
 router.post('/:id/task', authMiddleware, addTask)
 router.delete('/:id/task/:taskId', authMiddleware, deleteTask)
+router.put('/:id/task/:taskId', authMiddleware, updateTaskByAdmin)
+router.put('/task/:taskId/status', authMiddleware, updateTask)
 
 // update task: for admin update all fields
 

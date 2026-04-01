@@ -13,7 +13,7 @@ const taskSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["todo", "pending", "done", "blocked"],
+      enum: taskStatusEnum,
       default: "todo",
     },
     project: {
@@ -43,6 +43,8 @@ const taskSchema = new Schema(
   },
   { timestamps: true },
 );
+
+export const taskStatusEnum = ["todo", "pending", "done", "blocked"]
 
 const Task = mongoose.model("Task", taskSchema);
 
