@@ -6,3 +6,5 @@ node_modules
 todo.txt
 /todo.txt
 todo
+prettierrc
+.prettierrc

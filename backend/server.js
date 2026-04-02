@@ -6,8 +6,10 @@ import cookieParser from "cookie-parser";
 import userRoute from "./routes/userRoute.js";
 import organizationRoute from "./routes/organization.js";
 import projectRoute from "./routes/project.js";
-import taskRouter from './routes/task.js'
-import inviteRouter from './routes/invite.js'
+import taskRoute from './routes/task.js'
+import inviteRoute from './routes/invite.js'
+import commentsRoute from './routes/comments.js'
+
 
 dotenv.config();
 
@@ -24,9 +26,9 @@ app.use(cookieParser());
 app.use("/api/auth", userRoute);
 app.use("/api/organization", organizationRoute);
 app.use("/api/project", projectRoute);
-app.use("/api/task", taskRouter);
-app.use("/api/invite", inviteRouter);
-
+app.use("/api/tasks", taskRoute);
+app.use("/api/invite", inviteRoute);
+app.get("/api/comments", commentsRoute);
 
 app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}`);

@@ -1,6 +1,7 @@
 import express from 'express';
 import authMiddleware from '../middleware/authMiddleware.js';
 import { getTask } from '../controllers/taskController.js';
+import { createComment, getComments } from '../controllers/commentController.js';
 
 
 const router = express.Router();
@@ -8,6 +9,10 @@ const router = express.Router();
 // Mock data for tasks
 // get task for user(member)
 router.get('/', authMiddleware, getTask) 
+
+//comments
+router.get('/:taskId/comments', authMiddleware, getComments)
+router.post('/:taskId/comments', authMiddleware, createComment)
 
 
 
