@@ -1,10 +1,12 @@
 import express from "express";
-import authMiddleware from "../middleware/authMiddleware";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 
-
+router.get('/', authMiddleware, (req, res) => {
+    res.status(200).json({message:'get comments'})
+})
 
 
 export default router;

@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
 
+export const taskStatusEnum = ["todo", "pending", "done", "blocked"];
+
+
 const taskSchema = new Schema(
   {
     title: {
@@ -44,7 +47,6 @@ const taskSchema = new Schema(
   { timestamps: true },
 );
 
-export const taskStatusEnum = ["todo", "pending", "done", "blocked"]
 
 const Task = mongoose.model("Task", taskSchema);
 

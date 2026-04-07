@@ -4,8 +4,6 @@ import Task from "../models/taskModel.js"
 
 
 
-
-
 // get comments for the user who is assigned to the task.
 // for the admin we create another function that get comments for all tasks.
 export const getComments = async (req, res) => {

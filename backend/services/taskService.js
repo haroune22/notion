@@ -2,7 +2,7 @@
 import Comments from "../models/commentsModel.js"
 import ProjectMember from "../models/projectMemberModel.js"
 import Task from "../models/taskModel.js"
-import { deleteComment } from "./commentService.js"
+import { deleteCommentService } from "./commentService.js"
 
 
 export const DeleteTaskService = async (userId, projectId, taskId) => {
@@ -18,7 +18,7 @@ export const DeleteTaskService = async (userId, projectId, taskId) => {
     await Comments.deleteMany({
         task: taskId
     });
-    
+
     await Task.findOneAndDelete({
         _id: taskId,
         project: projectId
@@ -31,16 +31,11 @@ export const DeleteTaskService = async (userId, projectId, taskId) => {
 // when delete tasks for organization we simply call this function for every project inside the organization:
 export const DeleteTasksService = async (projectId) => {
 
-    const tasks = await Task.find({
-        project: projectId,
-    });
+    const tasks = await Task.find({ project: projectId })
 
-    await Promise.all(
-        tasks.map(t => deleteComment(t._id))
-    );
+    const taskIds = tasks.map(t => t._id)
 
-    await Task.deleteMany({
-        project: projectId,
-    });
+    await Comments.deleteMany({ task: { $in: taskIds } })
 
+    await Task.deleteMany({ project: projectId })
 }

@@ -18,7 +18,7 @@ export const deleteProjectService = async (userId, projectId) => {
     // Delete all tasks associated with the project
     await DeleteTasksService(projectId)
 
-    await ProjectMember.deleteOne({
+    await ProjectMember.deleteMany({
         project: projectId,
     })
 

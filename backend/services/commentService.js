@@ -1,7 +1,7 @@
 import Comments from "../models/commentsModel.js"
 
-export const deleteComment = async (taskId) => {
-    await Comments.deleteOne({
+export const deleteCommentService = async (taskId) => {
+    await Comments.deleteMany({
         task: taskId
     })
 }
