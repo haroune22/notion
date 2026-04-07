@@ -4,6 +4,7 @@ import organizationMember from "../models/organizationMemberModel.js";
 import Organization from "../models/organizationModel.js";
 import Project from "../models/projectModel.js";
 import User from "../models/userModel.js";
+import { deleteProjectService } from "../services/projectService.js";
 
 export const CreateProject = async (req, res) => {
   const userId = req.user._id;
@@ -73,9 +74,11 @@ export const deleteProject = async (req, res) => {
       return res.status(403).json({ message: "Not authorized" });
     }
 
+    
     // todo: delete all members related to this project with their tasks
-
+    
     await project.findByIdAndDelete(projectId);
+    await deleteProjectService(userId, projectId)
 
     return res.status(200).json({ message: "project deleted" });
   } catch (error) {

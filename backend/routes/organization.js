@@ -14,6 +14,7 @@ router.post("/", authMiddleware, CreateOrganization);
 router.get('/', authMiddleware, getOrganization)
 router.delete("/:orgId", authMiddleware, deleteOrganization);
 router.post('/:orgId/invites', authMiddleware, CreateInvitation)
+
 // create project:
 router.post("/:orgId/projects", authMiddleware, CreateProject);
 router.get('/:orgId/projects', authMiddleware, getProjects)

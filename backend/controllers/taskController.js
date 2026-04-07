@@ -1,6 +1,7 @@
 import ProjectMember from "../models/projectMemberModel.js";
 import Project from "../models/projectModel.js";
 import Task, { taskStatusEnum } from "../models/taskModel.js";
+import { DeleteTaskService } from "../services/taskService.js";
 
 export const getTask = async (req, res) => {
   const userId = req.user._id;
@@ -109,23 +110,8 @@ export const deleteTask = async (req, res) => {
     const taskId = req.params.taskId
 
     try {
-        const projectAdmin = await ProjectMember.findOne({
-            project: projectId,
-            user: userId,
-        })
 
-        if(!projectAdmin || projectAdmin.role !== 'admin'){
-            return res.status(403).json({ message :'not a allowed to delete task on this project'})
-        }
-
-        const deletedTask = await Task.findOneAndDelete({
-            _id: taskId,
-            project: projectId
-        })
-
-        if(!deletedTask){
-            return res.status(400).json({ message: 'task not found'})
-        }
+        await DeleteTaskService(userId, projectId, taskId)
 
         return res.status(200).json({ message: 'task deleted'})
     } catch (error) {

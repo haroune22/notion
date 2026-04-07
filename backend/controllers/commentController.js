@@ -85,7 +85,7 @@ export const createComment = async (req, res) => {
 
 }
 
-export const deleteComment = async (req, res) => {
+export const removeComment = async (req, res) => {
 
     const userId = req.user._id
     const taskId = req.params.taskId

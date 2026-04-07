@@ -4,6 +4,7 @@ import OrganizationMember from "../models/organizationMemberModel.js";
 import invite from "../models/inviteModel.js";
 import crypto from "crypto";
 import User from "../models/userModel.js";
+import { DeleteOrgService } from "../services/organizationService.js";
 
 
 export const CreateOrganization = async (req, res) => {
@@ -48,17 +49,7 @@ export const deleteOrganization = async (req, res) => {
       return res.status(404).json({ message: "organization not found" });
     }
 
-    // check if the user is manager of org
-    const membership = await organizationMember.findOne({
-      organization: org._id,
-      user: userId,
-    });
-
-    if (!membership || membership.role !== "manager") {
-      return res.status(403).json({ message: "not authorized to delete org" });
-    }
-    // todo: delete all members related to this organization with projects and tasks
-    await organization.findByIdAndDelete(org._id);
+    await DeleteOrgService(userId, orgId);
 
     return res.status(200).json({ message: "organization deleted" });
   } catch (error) {

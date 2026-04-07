@@ -15,8 +15,8 @@ import { addTask, deleteTask, getTasks, updateTask, updateTaskByAdmin } from "..
 const router = express.Router();
 
 
-router.delete("/:id", authMiddleware, deleteProject);
 router.get('/my', authMiddleware, getProject)
+router.delete("/:id", authMiddleware, deleteProject);
 
 router.get('/:id/members', authMiddleware, getProjectMembers)
 router.post('/:id/addMember', authMiddleware, addMemberToProject)

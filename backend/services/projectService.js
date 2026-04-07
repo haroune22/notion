@@ -1,10 +1,11 @@
-import ProjectMember from "../models/projectMemberModel"
-import OrganizationMember from "../models/organizationMemberModel"
-import Project from "../models/projectModel"
-import { DeleteTasksService } from "./taskService"
+import ProjectMember from "../models/projectMemberModel.js"
+import OrganizationMember from "../models/organizationMemberModel.js"
+import Project from "../models/projectModel.js"
+import { DeleteTasksService } from "./taskService.js"
 
 // delete one project
 export const deleteProjectService = async (userId, projectId) => {
+    
     const projectAdmin = await ProjectMember.findOne({
         project: projectId,
         user: userId,
@@ -17,7 +18,7 @@ export const deleteProjectService = async (userId, projectId) => {
     // Delete all tasks associated with the project
     await DeleteTasksService(projectId)
 
-    await ProjectMember.deleteMany({
+    await ProjectMember.deleteOne({
         project: projectId,
     })
 
