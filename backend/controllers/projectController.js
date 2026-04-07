@@ -8,7 +8,7 @@ import { deleteProjectService } from "../services/projectService.js";
 
 export const CreateProject = async (req, res) => {
   const userId = req.user._id;
-  const orgId = req.params.id;
+  const orgId = req.params.orgId;
   const { name } = req.body;
 
   if (!name) {

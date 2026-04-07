@@ -1,6 +1,5 @@
 import organization from "../models/organizationModel.js";
 import organizationMember from "../models/organizationMemberModel.js";
-import OrganizationMember from "../models/organizationMemberModel.js";
 import invite from "../models/inviteModel.js";
 import crypto from "crypto";
 import User from "../models/userModel.js";
@@ -40,7 +39,7 @@ export const CreateOrganization = async (req, res) => {
 
 export const deleteOrganization = async (req, res) => {
   const userId = req.user._id;
-  const orgId = req.params.id;
+  const orgId = req.params.orgId;
 
   try {
     const org = await organization.findById(orgId);
@@ -64,13 +63,15 @@ export const getOrganization = async (req, res) => {
   const userId = req.user._id;
 
   try {
-    const org = await organizationMember.findOne({
-      user: userId,
+    const org = await organization.find({
+      ownerId: userId,
     });
     
     if (!org) {
       return res.status(404).json({ message: "organization not found" });
     }
+
+    
 
     return res.status(200).json({ message: "organization retrieved", org });
   } catch (error) {
@@ -97,10 +98,12 @@ export const CreateInvitation = async (req, res) => {
   }
 
   try {
-    const orgManager = await OrganizationMember.findOne({
+    const orgManager = await organizationMember.findOne({
       organization: orgId,
       user: userId,
     })
+
+    // console.log(orgManager);
 
     if(!orgManager || orgManager.role !== 'manager'){
       return res.status(403).json({ message: 'not authorized to send invites'})
@@ -119,7 +122,7 @@ export const CreateInvitation = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user) {
-      const isMember = await OrganizationMember.findOne({
+      const isMember = await organizationMember.findOne({
         organization: orgId,
         user: user._id,
       });

@@ -18,7 +18,7 @@ const router = express.Router();
 router.get('/my', authMiddleware, getProject)
 router.delete("/:id", authMiddleware, deleteProject);
 
-router.get('/:id/members', authMiddleware, getProjectMembers)
+router.get('/:id/members', authMiddleware, getProjectMembers);
 router.post('/:id/addMember', authMiddleware, addMemberToProject)
 router.post('/:id/removeMember', authMiddleware, removeMemberFromProject)
 

@@ -84,6 +84,8 @@ export const Register = async (req, res) => {
     console.log(error);
   }
 };
+
+
 export const Logout = async (req, res) => {
   // this is logout using cookies
   try {
