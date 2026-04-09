@@ -23,7 +23,7 @@ export const getTask = async (req, res) => {
 
 export const getTasks = async (req, res) => {
   const userId = req.user._id;
-  const projectId = req.params._id;
+  const projectId = req.params.id;
 
   try {
     const member = await ProjectMember.findOne({
@@ -54,6 +54,7 @@ export const addTask = async (req, res) => {
   const userId = req.user._id;
   const projectId = req.params.id;
 
+  // we can add status but will keep it default to todo and only admin can update the status to pending, done or blocked
   const { title, description, assignedTo, dueDate, priority } = req.body;
 
   if (!title || !description || !assignedTo || !dueDate) {
@@ -169,7 +170,7 @@ export const updateTaskByAdmin = async (req, res) => {
 export const updateTask = async (req, res) => {
 
   const userId = req.user._id
-  const taskId = req.params.taskId
+  const taskId = req.params.id
   const { status } = req.body
 
   if(!status || !taskStatusEnum.includes(status)){
@@ -178,9 +179,14 @@ export const updateTask = async (req, res) => {
 
   try {
     const task = await Task.findById(taskId)
+    // console.log(task)
 
-    if(!task || task.assignedTo.toString() !== userId.toString()){
+    if(!task){
       return res.status(402).json({message: "task not found"})
+    }
+
+    if(task.assignedTo.toString() !== userId.toString()){
+      return res.status(403).json({ message: 'not authorized'})
     }
 
     const updatedTask = await Task.findByIdAndUpdate(taskId, {

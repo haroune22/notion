@@ -11,6 +11,8 @@ export const DeleteTaskService = async (userId, projectId, taskId) => {
         user: userId,
     });
 
+    console.log(projectAdmin)
+    
     if(!projectAdmin || projectAdmin.role !== 'admin'){
         throw new Error('not a allowed to delete task on this project')
     };

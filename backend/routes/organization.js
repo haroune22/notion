@@ -13,7 +13,7 @@ const router = express.Router();
 router.post("/", authMiddleware, CreateOrganization);
 router.get('/', authMiddleware, getOrganization);
 router.delete("/:orgId", authMiddleware, deleteOrganization);;
-router.post('/:orgId/invites', authMiddleware, CreateInvitation)
+router.post('/:orgId/invites', authMiddleware, CreateInvitation);
 
 // create project:
 router.post("/:orgId/projects", authMiddleware, CreateProject);

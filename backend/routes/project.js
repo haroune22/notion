@@ -19,20 +19,20 @@ router.get('/my', authMiddleware, getProject)
 router.delete("/:id", authMiddleware, deleteProject);
 
 router.get('/:id/members', authMiddleware, getProjectMembers);
-router.post('/:id/addMember', authMiddleware, addMemberToProject)
-router.post('/:id/removeMember', authMiddleware, removeMemberFromProject)
+router.post('/:id/addMember', authMiddleware, addMemberToProject);
+router.delete('/:id/removeMember', authMiddleware, removeMemberFromProject);
 
 router.put('/:id/promote', authMiddleware, promoteMember)
 router.put('/:id/demote', authMiddleware, demoteMember)
 // todo: update project
 
 // get the admin tasks that he created in the project
-router.get('/:id/task', authMiddleware, getTasks)
+router.get('/:id/tasks', authMiddleware, getTasks);
 
-router.post('/:id/task', authMiddleware, addTask)
-router.delete('/:id/task/:taskId', authMiddleware, deleteTask)
-router.put('/:id/task/:taskId', authMiddleware, updateTaskByAdmin)
-router.put('/task/:taskId/status', authMiddleware, updateTask)
+router.post('/:id/task', authMiddleware, addTask);
+router.delete('/:id/task/:taskId', authMiddleware, deleteTask);
+router.put('/:id/task/:taskId', authMiddleware, updateTaskByAdmin);
+router.put('/task/:id/status', authMiddleware, updateTask);
 
 // update task: for admin update all fields
 
