@@ -8,7 +8,7 @@ const router = express.Router();
 
 // Mock data for tasks
 // get task for user(member)
-router.get('/', authMiddleware, getTask) 
+router.get('/', authMiddleware, getTask);
 
 //comments
 router.get('/:taskId/comments', authMiddleware, getComments)
