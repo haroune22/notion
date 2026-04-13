@@ -12,6 +12,7 @@ import Projects from "./pages/Projects";
 import Tasks from "./pages/Tasks";
 import './App.css'
 import { useAuth } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
 
@@ -22,11 +23,16 @@ function App() {
     // we will work on routes later
     <BrowserRouter>
       <Routes>
+        {/* Public */ }
         <Route path="/" element={ <Login /> } />
         <Route path="/register" element={ <Register /> } />
-        <Route path="/organization" element={ <Organization /> } />
-        <Route path="/projects/:orgId" element={ <Projects /> } />
-        <Route path="/tasks/:projectId" element={ <Tasks /> } />
+
+        {/* Protected group */ }
+        <Route element={ <ProtectedRoute /> }>
+          <Route path="/organization" element={ <Organization /> } />
+          <Route path="/projects/:orgId" element={ <Projects /> } />
+          <Route path="/tasks/:projectId" element={ <Tasks /> } />
+        </Route>
       </Routes>
     </BrowserRouter>
   )
