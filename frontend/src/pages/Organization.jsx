@@ -2,6 +2,7 @@ import React from 'react'
 import api from '../api/axios'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { Navbar } from '../components/Navbar'
 
 const Organization = () => {
     const { user, setUser } = useAuth();
@@ -15,16 +16,19 @@ const Organization = () => {
     };
 
     return (
-        <div>
-            organization
-            { user &&
-                <button
-                    onClick={ logout }
-                    className='p-2 bg-red-600 rounded-md'>
-                    logout for now
-                </button>
-            }
-        </div>
+        <>
+            <Navbar />
+            <div>
+                organization
+                { user &&
+                    <button
+                        onClick={ logout }
+                        className='p-2 bg-red-600 rounded-md'>
+                        logout for now
+                    </button>
+                }
+            </div>
+        </>
     )
 }
 
