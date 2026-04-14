@@ -11,9 +11,9 @@ export const AuthProvider = ( { children } ) => {
         const fetchUser = async () => {
             try {
                 const res = await api.get(
-                    "/api/auth/me",
+                    "/auth/me",
                 );
-                setUser( res.data.user );
+                setUser( res?.data?.user );
             } catch {
                 setUser( null );
             } finally {
@@ -22,7 +22,7 @@ export const AuthProvider = ( { children } ) => {
         };
 
         fetchUser();
-    }, [] );
+    }, [ user ] );
 
     return (
         <AuthContext.Provider value={ { user, setUser, loading } }>

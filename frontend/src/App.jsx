@@ -11,21 +11,20 @@ import Organization from "./pages/Organization";
 import Projects from "./pages/Projects";
 import Tasks from "./pages/Tasks";
 import './App.css'
-import { useAuth } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './api/ProtectedRoute';
+import PublicRoute from './api/PublicRoute';
 
 function App() {
-
-  const { user } = useAuth();
-  console.log( user );
 
   return (
     // we will work on routes later
     <BrowserRouter>
       <Routes>
         {/* Public */ }
-        <Route path="/" element={ <Login /> } />
-        <Route path="/register" element={ <Register /> } />
+        <Route element={ <PublicRoute /> }>
+          <Route path="/" element={ <Login /> } />
+          <Route path="/register" element={ <Register /> } />
+        </Route>
 
         {/* Protected group */ }
         <Route element={ <ProtectedRoute /> }>
