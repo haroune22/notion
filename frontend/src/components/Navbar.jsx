@@ -1,35 +1,53 @@
-import React from 'react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from "../context/AuthContext";
+import { IoIosLogIn } from "react-icons/io";
+import { FiLogOut } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
 
 export const Navbar = () => {
-    const { user } = useAuth();
+    const { user, setUser } = useAuth();
+    const navigate = useNavigate();
+
+    const logout = async () => {
+        await api.post( "/auth/logout" );
+        setUser( null );
+        navigate( "/" );
+    };
 
     return (
-        <div className='flex items-center justify-between w-full h-20 border-b border-gray-300 px-4'>
-            <div className='ml-4 flex items-center justify-center gap-4'>
-                <h3 className='text-lg text-blue-800'>
+        <div className="flex items-center justify-between w-full h-16 border-b border-gray-200 px-6 bg-white">
+
+            {/* LEFT */ }
+            <div className="flex items-center gap-3">
+                <img src="/logo.png" alt="logo" className="w-10 h-10" />
+                <h3 className="text-lg font-semibold text-gray-800">
                     Motion
                 </h3>
-                <img src="/logo.png" alt="logo" width={ 60 } height={ 60 } />
             </div>
-            <div className='flex items-center justify-center gap-2'>
-                { user ?
-                    <div className='flex items-center justify-center gap-4'>
-                        <p className='underline text-lg font-medium '>
+
+            {/* RIGHT */ }
+            <div className="flex items-center gap-4">
+                { user ? (
+                    <>
+                        <p className="text-gray-700 font-medium underline underline-offset-4">
                             { user.name }
                         </p>
-                        <button className='text-white text-md bg-blue-700 rounded-lg px-4 py-2 hover:cursor-pointer hover:bg-blue-600'>
+
+                        <button
+                            onClick={ logout }
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-300 transition hover:cursor-pointer"
+                        >
+                            <FiLogOut />
                             Logout
                         </button>
-                    </div>
-                    :
-                    <div className='flex items-center justify-center gap-4'>
-                        <button className='text-white text-md bg-blue-700 rounded-lg px-4 py-2 hover:cursor-pointer hover:bg-blue-600'>
-                            Login
-                        </button>
-                    </div>
-                }
+                    </>
+                ) : (
+                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+                        <IoIosLogIn />
+                        Login
+                    </button>
+                ) }
             </div>
         </div>
-    )
-}
+    );
+};

@@ -13,6 +13,7 @@ import Tasks from "./pages/Tasks";
 import './App.css'
 import ProtectedRoute from './api/ProtectedRoute';
 import PublicRoute from './api/PublicRoute';
+import Layout from './components/Layout';
 
 function App() {
 
@@ -28,9 +29,11 @@ function App() {
 
         {/* Protected group */ }
         <Route element={ <ProtectedRoute /> }>
-          <Route path="/organization" element={ <Organization /> } />
-          <Route path="/projects/:orgId" element={ <Projects /> } />
-          <Route path="/tasks/:projectId" element={ <Tasks /> } />
+          <Route element={ <Layout /> }>
+            <Route path="/organization" element={ <Organization /> } />
+            <Route path="/projects/:orgId" element={ <Projects /> } />
+            <Route path="/tasks/:projectId" element={ <Tasks /> } />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
