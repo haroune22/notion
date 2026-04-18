@@ -71,8 +71,6 @@ export const getOrganization = async (req, res) => {
       return res.status(404).json({ message: "organization not found" });
     }
 
-    
-
     return res.status(200).json({ message: "organization retrieved", org });
   } catch (error) {
     res
