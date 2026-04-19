@@ -3,6 +3,7 @@ import {
   CreateInvitation,
   CreateOrganization,
   deleteOrganization,
+  getMyOrg,
   getOrganization,
 } from "../controllers/organizationController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
@@ -12,6 +13,7 @@ const router = express.Router();
 
 router.post("/", authMiddleware, CreateOrganization);
 router.get('/', authMiddleware, getOrganization);
+router.get('/me/:id', authMiddleware, getMyOrg)
 router.delete("/:orgId", authMiddleware, deleteOrganization);;
 router.post('/:orgId/invites', authMiddleware, CreateInvitation);
 

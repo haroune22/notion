@@ -31,8 +31,8 @@ function App() {
         <Route element={ <ProtectedRoute /> }>
           <Route element={ <Layout /> }>
             <Route path="/organization" element={ <Organization /> } />
-            <Route path="/projects/:orgId" element={ <Projects /> } />
-            <Route path="/tasks/:projectId" element={ <Tasks /> } />
+            <Route path="/:orgId/projects" element={ <Projects /> } />
+            <Route path="/:projectId/task" element={ <Tasks /> } />
           </Route>
         </Route>
       </Routes>

@@ -80,6 +80,24 @@ export const getOrganization = async (req, res) => {
   }
 };
 
+export const getMyOrg = async (req, res) => {
+
+  const userId = req.user._id
+  const orgId = req.params.id
+
+  try {
+    if(!orgId) {
+      return res.status(400).json({ message: "Organization ID is required" });
+    }
+
+    const org = await organization.findById(orgId)
+
+    return res.status(200).json(org)
+  } catch (error) {
+    res.status(500).json({ message: "Error creating invitation", error: error.message });
+    console.log(error);
+  }
+}
 
 export const CreateInvitation = async (req, res) => {
 

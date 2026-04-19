@@ -1,11 +1,13 @@
 import { useEffect } from "react"
 import api from "../api/axios"
 import { useState } from "react"
+import { Link } from "react-router-dom"
 
 
 const Organization = () => {
     const [ data, setData ] = useState( [] )
     const [ name, setName ] = useState( '' )
+
 
     useEffect( () => {
         const getOrg = async () => {
@@ -23,7 +25,7 @@ const Organization = () => {
         if ( name.length < 2 ) return;
         try {
             const res = await api.post( '/organization', { name } )
-            setData( [ ...data, res.data.newOrg ] )
+            setData( prev => [ ...prev, res.data.newOrg ] )
             setName( '' )
         } catch ( error ) {
             console.log( error )
@@ -44,6 +46,23 @@ const Organization = () => {
             <div>
                 <h1 className="text-2xl font-bold">Organizations:</h1>
             </div>
+            <div>
+                <div className="flex items-center justify-center gap-2">
+                    <input
+                        type="text"
+                        placeholder="name your organization.."
+                        className="text-black w-md py-2 px-1 rounded-lg focus:border-blue-600 bg-transparent ml-2"
+                        onChange={ ( e ) => setName( e.target.value ) }
+                        value={ name }
+                    />
+                    <button
+                        onClick={ handleCreateOrg }
+                        className="text-white items-center gap-2 px-4 py-2 rounded-lg border bg-gray-900 hover:bg-gray-800 transition hover:cursor-pointer"
+                    >
+                        create organization
+                    </button>
+                </div>
+            </div>
             <div className="flex flex-col items-start gap-4">
                 { data.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-10">
@@ -53,11 +72,15 @@ const Organization = () => {
                 { data.map( ( org ) => (
                     <div
                         key={ org._id }
-                        className="flex items-center justify-center gap-6"
+                        className="flex items-center justify-between w-96 border border-gray-200 px-4 py-2 rounded-lg hover:shadow-sm transition"
                     >
-                        <p className="font-medium text-gray-800 hover:underline hover:cursor-pointer">
-                            { org.name }
-                        </p>
+                        <Link to={ `/${ org._id }/projects` }>
+                            <p
+                                className="font-medium text-gray-800 hover:underline hover:cursor-pointer"
+                            >
+                                { org.name }
+                            </p>
+                        </Link>
 
                         <button
                             onClick={ () => handleDelete( org._id ) }
@@ -67,23 +90,6 @@ const Organization = () => {
                         </button>
                     </div>
                 ) ) }
-                <div>
-                    <div className="flex items-center justify-center gap-2">
-                        <input
-                            type="text"
-                            placeholder="name your organization.."
-                            className="text-black w-md py-2 px-1 rounded-lg focus:border-blue-600 bg-transparent ml-2"
-                            onChange={ ( e ) => setName( e.target.value ) }
-                            value={ name }
-                        />
-                        <button
-                            onClick={ handleCreateOrg }
-                            className="text-white items-center gap-2 px-4 py-2 rounded-lg border bg-gray-900 hover:bg-gray-800 transition hover:cursor-pointer"
-                        >
-                            create organization
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     )
