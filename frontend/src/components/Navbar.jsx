@@ -15,16 +15,7 @@ export const Navbar = () => {
     };
 
     return (
-        <div className="flex items-center justify-between w-full h-16 border-b border-gray-200 px-6 bg-white">
-
-            {/* LEFT */ }
-            <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="logo" className="w-10 h-10" />
-                <h3 className="text-lg font-semibold text-gray-800">
-                    Motion
-                </h3>
-            </div>
-
+        <div className="flex items-center justify-end w-full h-16 border-b border-gray-300 px-6 bg-white">
             {/* RIGHT */ }
             <div className="flex items-center gap-4">
                 { user ? (

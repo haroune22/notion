@@ -12,19 +12,25 @@ export const Sidebar = () => {
         },
         {
             name: "Projects",
-            path: "/projects/123",
+            path: "/projects/:id",
             icon: <FaFolder />,
         },
         {
             name: "Tasks",
-            path: "/tasks/123",
+            path: "/tasks/:id",
             icon: <FaTasks />,
         },
     ];
 
     return (
         <div className="w-64 h-screen border-r border-gray-300 p-4">
-            <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-3 border-b-2 border-gray-300 pb-2 mb-2">
+                <img src="/logo.png" alt="logo" className="w-10 h-10" />
+                <h3 className="text-lg font-semibold text-gray-800">
+                    Motion
+                </h3>
+            </div>
+            <div className="flex flex-col gap-6 mt-6">
                 { links.map( ( link, index ) => {
                     const isActive = location.pathname.includes( link.path );
 
