@@ -12,12 +12,12 @@ export const Sidebar = () => {
         },
         {
             name: "Projects",
-            path: "/projects/:id",
+            path: "/projects",
             icon: <FaFolder />,
         },
         {
             name: "Tasks",
-            path: "/tasks/:id",
+            path: "/tasks",
             icon: <FaTasks />,
         },
     ];
@@ -37,7 +37,6 @@ export const Sidebar = () => {
                     return (
                         <Link
                             key={ index }
-                            to={ link.path }
                             className={ `flex items-center gap-3 px-4 py-2 rounded-lg transition 
               ${ isActive
                                     ? "bg-blue-100 text-blue-700"
