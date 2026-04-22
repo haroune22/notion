@@ -14,6 +14,15 @@ export const CreateOrganization = async (req, res) => {
     return res.status(400).json({ message: "Organization name is required" });
   }
 
+  const isMemberOfOrg = await organizationMember.findOne({
+    user: userId,
+    organization: { $in: await organization.find({}, "_id") },
+  });
+
+  if (isMemberOfOrg) {
+    return res.status(400).json({ message: "User already a member of an organization" });
+  }
+
   try {
     const newOrg = await organization.create({
       name,
@@ -71,7 +80,7 @@ export const getOrganization = async (req, res) => {
       return res.status(404).json({ message: "organization not found" });
     }
 
-    return res.status(200).json({ message: "organization retrieved", org });
+    return res.status(200).json({ message: "organization retrieved", org: org, isAdmin: isAdmin });
   } catch (error) {
     res
       .status(500)
@@ -92,7 +101,18 @@ export const getMyOrg = async (req, res) => {
 
     const org = await organization.findById(orgId)
 
-    return res.status(200).json(org)
+    const isMember = await organizationMember.findOne({
+      organization: orgId,
+      user: userId,
+    })
+
+    if (!isMember) {
+      return res.status(403).json({ message: "not authorized to view this organization" });
+    }
+
+    const isAdmin = isMember.role === 'manager' ? true : false
+
+    return res.status(200).json({ message: "organization retrieved", org: org, isAdmin: isAdmin  });
   } catch (error) {
     res.status(500).json({ message: "Error creating invitation", error: error.message });
     console.log(error);

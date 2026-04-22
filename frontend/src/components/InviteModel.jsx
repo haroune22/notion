@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import api from '../api/axios'
 
 export const InviteModel = ( { setShowInviteModel, orgId } ) => {
+
     const [ email, setEmail ] = useState( '' )
     const [ loading, setLoading ] = useState( false )
 
@@ -24,19 +25,13 @@ export const InviteModel = ( { setShowInviteModel, orgId } ) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-
-            {/* Modal Card */ }
             <div className="bg-white w-full max-w-md rounded-xl shadow-lg p-6">
-
-                {/* Header */ }
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">
                     Invite Member
                 </h2>
                 <p className="text-sm text-gray-500 mb-4">
                     Enter the email of the person you want to invite
                 </p>
-
-                {/* Input */ }
                 <input
                     type="email"
                     placeholder="example@email.com"
@@ -44,8 +39,6 @@ export const InviteModel = ( { setShowInviteModel, orgId } ) => {
                     value={ email }
                     onChange={ ( e ) => setEmail( e.target.value ) }
                 />
-
-                {/* Actions */ }
                 <div className="flex justify-end gap-3">
                     <button
                         onClick={ () => setShowInviteModel( false ) }
@@ -53,7 +46,6 @@ export const InviteModel = ( { setShowInviteModel, orgId } ) => {
                     >
                         Cancel
                     </button>
-
                     <button
                         onClick={ handleInvite }
                         disabled={ loading }

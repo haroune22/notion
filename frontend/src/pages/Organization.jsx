@@ -13,6 +13,7 @@ const Organization = () => {
         const getOrg = async () => {
             try {
                 const res = await api.get( '/organization' )
+                console.log( res.data )
                 setData( res.data.org )
             } catch ( error ) {
                 console.log( error )
