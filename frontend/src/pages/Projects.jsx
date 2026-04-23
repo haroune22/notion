@@ -5,8 +5,9 @@ import { InviteModel } from "../components/InviteModel"
 
 
 const Projects = () => {
-    const [ data, setData ] = useState( [] )
+    const [ projects, setProjects ] = useState( [] )
     const [ orgName, setOrgName ] = useState( '' )
+    const [ isAdmin, setIsAdmin ] = useState( false );
     const [ name, setName ] = useState( '' )
     const { orgId } = useParams()
     const [ showInviteModel, setShowInviteModel ] = useState( false )
@@ -14,16 +15,15 @@ const Projects = () => {
     useEffect( () => {
         const getProjects = async () => {
             const res = await api.get( `/organization/${ orgId }/projects` );
-            console.log( res.data.projects );
-            setData( res.data.projects );
+            setProjects( res.data.projects );
         };
 
         const getOrg = async () => {
             const res = await api.get( `/organization/me/${ orgId }` );
-            console.log( res.data.org );
-            setOrgName( res.data.name );
+            console.log( res.data );
+            setOrgName( res.data.org.name );
+            setIsAdmin( res.data.isAdmin );
         };
-
         getProjects();
         getOrg();
     }, [ orgId ] );
@@ -31,17 +31,16 @@ const Projects = () => {
     const handleDelete = async ( id ) => {
         try {
             await api.delete( `/projects/${ id }` );
-            setData( prev => prev.filter( p => p._id !== id ) );
+            setProjects( prev => prev.filter( p => p._id !== id ) );
         } catch ( err ) {
             console.log( err );
         }
     };
 
     const handleCreateProject = async () => {
-        if ( name.length < 2 ) return;;
         try {
             const res = await api.post( `/organization/${ orgId }/projects`, { name } );
-            setData( prev => [ ...prev, res.data.newProject ] );
+            setProjects( prev => [ res.data.newProject, ...prev ] );
             setName( '' );
         } catch ( err ) {
             console.log( err );
@@ -60,13 +59,14 @@ const Projects = () => {
                             Manage your projects
                         </p>
                     </div>
-
-                    <button
-                        onClick={ () => setShowInviteModel( true ) }
-                        className="bg-blue-700 text-white px-5 py-2 rounded-lg hover:bg-blue-600 transition shadow-sm hover:cursor-pointer"
-                    >
-                        Invite Members
-                    </button>
+                    { isAdmin && (
+                        <button
+                            onClick={ () => setShowInviteModel( true ) }
+                            className="bg-blue-700 text-white px-5 py-2 rounded-lg hover:bg-blue-600 transition shadow-sm hover:cursor-pointer"
+                        >
+                            Invite Members
+                        </button>
+                    ) }
                 </div>
                 <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-3 shadow-sm mb-6">
                     <input
@@ -84,8 +84,8 @@ const Projects = () => {
                     </button>
                 </div>
                 <div className="max-w-4xl mx-auto flex flex-col gap-4">
-                    { data.length > 0 ? (
-                        data.map( ( project ) => (
+                    { projects.length > 0 ? (
+                        projects.map( ( project ) => (
                             <div
                                 key={ project._id }
                                 className="bg-white border border-gray-200 rounded-xl p-5 flex items-center justify-between hover:shadow-md transition"
@@ -98,12 +98,15 @@ const Projects = () => {
                                         { project.description || "No description" }
                                     </p>
                                 </div>
-                                <button
-                                    onClick={ () => handleDelete( project._id ) }
-                                    className="text-red-500 text-medium hover:text-red-600 font-medium hover:underline hover:cursor-pointer"
-                                >
-                                    Delete
-                                </button>
+                                { isAdmin && (
+                                    <button
+                                        onClick={ () => handleDelete( project._id ) }
+                                        className="text-red-500 text-medium hover:text-red-600 font-medium hover:underline hover:cursor-pointer"
+                                        disabled={ !isAdmin }
+                                    >
+                                        Delete
+                                    </button>
+                                ) }
                             </div>
                         ) )
                     ) : (

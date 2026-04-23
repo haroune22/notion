@@ -72,9 +72,17 @@ export const getOrganization = async (req, res) => {
   const userId = req.user._id;
 
   try {
-    const org = await organization.find({
-      ownerId: userId,
+    const isMember = await organizationMember.findOne({
+      user: userId,
     });
+
+    if(!isMember) {
+      return res.status(403).json({ message: "not authorized to view this organization" });
+    }
+    
+    const isAdmin = isMember.role === 'manager' ? true : false
+
+    const org = await organization.findById(isMember.organization)
     
     if (!org) {
       return res.status(404).json({ message: "organization not found" });
