@@ -14,6 +14,7 @@ import './App.css'
 import ProtectedRoute from './api/ProtectedRoute';
 import PublicRoute from './api/PublicRoute';
 import Layout from './components/Layout';
+import Invite from './pages/Invite';
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
             <Route path="/organization" element={ <Organization /> } />
             <Route path="/:orgId/projects" element={ <Projects /> } />
             <Route path="/:projectId/task" element={ <Tasks /> } />
+            <Route path="/invite/:token" element={ <Invite /> } />
           </Route>
         </Route>
       </Routes>
