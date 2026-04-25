@@ -13,7 +13,6 @@ const Register = () => {
     const navigate = useNavigate();
 
     const handleRegister = async () => {
-        // handle registration logic here
         try {
             const res = await api.post( "/auth/register", { email, password, name } );
             console.log( res.data );

@@ -15,7 +15,7 @@ const organizationMemberSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["manager", "admin", "member"],
+      enum: ["manager", "member"],
       default: "user",
     },
   },

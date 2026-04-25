@@ -4,6 +4,9 @@ import invite from "../models/inviteModel.js";
 import crypto from "crypto";
 import User from "../models/userModel.js";
 import { DeleteOrgService } from "../services/organizationService.js";
+import ProjectMember from "../models/projectMemberModel.js";
+import Project from "../models/projectModel.js";
+import Task from "../models/taskModel.js";
 
 
 export const CreateOrganization = async (req, res) => {
@@ -189,6 +192,58 @@ export const CreateInvitation = async (req, res) => {
     //sending email with link
     // const inviteLink = `${process.env.FRONTEND_URL}/accept-invite?token=${token}`;
     return res.json({ inviteLink: `http://localhost:5173/invite/${token}` })
+  } catch (error) {
+    res.status(500).json({ message: "Error creating invitation", error: error.message });
+    console.log(error);
+  }
+}
+
+export const leaveOrg = async (req, res) => {
+  const userId = req.user._id
+  const orgId = req.params.id
+
+  try {
+
+    if(!orgId){
+      return res.status(400).json({ message : 'organization required' })
+    };
+
+    const org = await organization.findById(orgId)
+
+    if(!org){
+      return res.status(404).json({ message : 'organization not found' })
+    };
+
+    const isMember = await organizationMember.findOne({
+      user: userId,
+      organization:orgId,
+    })
+
+    if(!isMember || isMember.role !== 'member'){
+      return res.status(403).json({ message : 'not able to leave this org' })
+    };
+
+    const projects = await Project.find({ organization: orgId }).select('_id')
+    const projectIds = projects.map(p => p._id)
+
+    await ProjectMember.deleteMany({
+      user: userId,
+      project: { $in: projectIds }
+    })
+
+    await Task.updateMany(
+      {
+        assignedTo: userId,
+        project: { $in: projectIds }
+      },
+      {
+        $unset: { assignedTo: "" }
+      }
+    )
+    
+    await isMember.deleteOne()
+    
+    return res.status(200).json({ message: 'user left organization' })
   } catch (error) {
     res.status(500).json({ message: "Error creating invitation", error: error.message });
     console.log(error);
