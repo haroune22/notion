@@ -203,7 +203,6 @@ export const leaveOrg = async (req, res) => {
   const orgId = req.params.id
 
   try {
-
     if(!orgId){
       return res.status(400).json({ message : 'organization required' })
     };
@@ -219,9 +218,13 @@ export const leaveOrg = async (req, res) => {
       organization:orgId,
     })
 
-    if(!isMember || isMember.role !== 'member'){
-      return res.status(403).json({ message : 'not able to leave this org' })
-    };
+    if (!isMember) {
+      return res.status(403).json({ message: 'not a member' })
+    }
+
+    if (isMember.role === 'manager') {
+      return res.status(403).json({ message: 'manager cannot leave org' })
+    }
 
     const projects = await Project.find({ organization: orgId }).select('_id')
     const projectIds = projects.map(p => p._id)

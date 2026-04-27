@@ -44,6 +44,16 @@ const Organization = () => {
         }
     }
 
+    const LeaveOrg = async ( id ) => {
+        try {
+            const res = await api.delete( `/organization/${ id }/leave` )
+            console.log( res.data )
+            setData( null )
+        } catch ( error ) {
+            console.log( error )
+        }
+    }
+
     return (
         <div className="px-4 pt-2 flex flex-col items-start gap-6">
 
@@ -82,14 +92,21 @@ const Organization = () => {
                                 { data.name }
                             </p>
                         </Link>
-
-                        <button
-                            onClick={ () => handleDelete( data._id ) }
-                            disabled={ !isAdmin }
-                            className="text-white px-4 py-2 rounded-lg bg-red-700 hover:bg-red-600 transition"
-                        >
-                            Leave
-                        </button>
+                        { isAdmin ? (
+                            <button
+                                onClick={ () => handleDelete( data._id ) }
+                                className="text-white px-4 py-2 rounded-lg hover:cursor-pointer bg-red-700 hover:bg-red-600 transition"
+                            >
+                                Delete
+                            </button>
+                        ) : (
+                            <button
+                                onClick={ () => LeaveOrg( data._id ) }
+                                className="text-white px-4 py-2 rounded-lg hover:cursor-pointer bg-red-700 hover:bg-red-600 transition"
+                            >
+                                Leave
+                            </button>
+                        ) }
 
                     </div>
 

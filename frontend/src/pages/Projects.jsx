@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import api from '../api/axios'
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { InviteModel } from "../components/InviteModel"
 
 
@@ -91,9 +91,11 @@ const Projects = () => {
                                 className="bg-white border border-gray-200 rounded-xl p-5 flex items-center justify-between hover:shadow-md transition"
                             >
                                 <div>
-                                    <h2 className="text-lg font-semibold text-gray-900">
-                                        { project.name }
-                                    </h2>
+                                    <Link to={ `/${ project._id }/tasks` }>
+                                        <h2 className="text-lg hover:underline font-semibold text-gray-900">
+                                            { project.name }
+                                        </h2>
+                                    </Link>
                                     <p className="text-sm text-gray-500 mt-1">
                                         { project.description || "No description" }
                                     </p>
