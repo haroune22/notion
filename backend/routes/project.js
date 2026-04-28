@@ -4,6 +4,7 @@ import {
   deleteProject,
   demoteMember,
   getProject,
+  getProjectById,
   getProjectMembers,
   promoteMember,
   removeMemberFromProject,
@@ -16,6 +17,7 @@ const router = express.Router();
 
 
 router.get('/my', authMiddleware, getProject)
+router.get('/:id', authMiddleware, getProjectById)
 router.delete("/:id", authMiddleware, deleteProject);
 
 router.get('/:id/members', authMiddleware, getProjectMembers);

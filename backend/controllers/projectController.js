@@ -97,12 +97,12 @@ export const getProjects = async (req, res) => {
     const orgMembership = await organizationMember.findOne({
       user: userId,
       organization: orgId,
-      role: "manager",
     });
 
     if (!orgMembership) {
       return res.status(403).json({ message: "Not authorized" });
     }
+
     const projects = await project.find({
       organization: orgId,
     });
@@ -136,6 +136,36 @@ export const getProject = async (req, res) => {
     }
 
     return res.status(200).json({ message: "Projects retrieved", projects });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error retrieving projects", error: error.message });
+  }
+};
+
+export const getProjectById = async (req, res) => {
+  const userId = req.user._id;
+  const projectId = req.params.id
+
+  try {
+    const membership = await projectMember.findOne({
+      user: userId,
+      project: projectId
+    });
+
+    if(!membership){
+      return res.status(403).json({message:'not authorized'})
+    }
+
+    const project = await Project.findById(projectId)
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    const isAdmin = membership.role === "admin" ? true : false;
+
+    return res.status(200).json({ message: "Projects retrieved", project , isAdmin });
   } catch (error) {
     res
       .status(500)

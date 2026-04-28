@@ -46,8 +46,7 @@ const Organization = () => {
 
     const LeaveOrg = async ( id ) => {
         try {
-            const res = await api.delete( `/organization/${ id }/leave` )
-            console.log( res.data )
+            await api.delete( `/organization/${ id }/leave` )
             setData( null )
         } catch ( error ) {
             console.log( error )

@@ -1,21 +1,170 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import api from '../api/axios';
+import { useParams } from 'react-router-dom';
+import CreateTaskModel from '../components/CreateTaskModel';
+
 
 const Tasks = () => {
+    const [ tasks, setTasks ] = useState( [] );
+    const [ project, setProject ] = useState( null );
+    const [ isAdmin, setIsAdmin ] = useState( false );
+
+    const [ showCreateTaskModel, setShowCreateTaskModel ] = useState( false )
+    const [ showMembersModel, setShowMembersModel ] = useState( false )
+
+    const { projectId } = useParams();
+
+    useEffect( () => {
+        const getProjectAndTasks = async () => {
+            try {
+                const projectRes = await api.get( `/projects/${ projectId }` );
+
+                setProject( projectRes.data.project );
+
+                const admin = projectRes.data.isAdmin;
+                setIsAdmin( admin );
+
+                if ( admin ) {
+                    const tasksRes = await api.get( `/projects/${ projectId }/tasks` );
+                    setTasks( tasksRes.data.tasks );
+                } else {
+                    const tasksRes = await api.get( '/tasks' );
+                    setTasks( tasksRes.data.tasks );
+                }
+
+            } catch ( error ) {
+                console.log( error );
+            }
+        };
+
+        getProjectAndTasks();
+
+    }, [ projectId ] );
+
     return (
-        <div className='min-h-screen bg-gray-50 px-6 py-8'>
-            {/* show project info */ }
-            <div>
+        <>
+            <div className="min-h-screen bg-gray-50 px-6 py-8">
 
-            </div>
-            {/* show create task for only admin */ }
-            <div>
+                <div className="max-w-5xl mx-auto">
+                    <div className="flex items-start justify-between mb-8">
 
-            </div>
-            {/* show all tasks of this project to admin and for member show only assigned tasks to him, then we add navigate to task for both admin and member */ }
-            <div>
+                        <div>
+                            <h1 className="text-3xl font-bold text-gray-900">
+                                { project?.name }
+                            </h1>
 
+                            <p className="text-gray-500 text-sm mt-1">
+                                Manage tasks and project members
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            { isAdmin && (
+                                <>
+                                    <button
+                                        onClick={ () => setShowMembersModel( true ) }
+                                        className="border border-gray-300 bg-white text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition"
+                                    >
+                                        Members
+                                    </button>
+                                    <button
+                                        onClick={ () => setShowCreateTaskModel( true ) }
+                                        className="bg-blue-700 text-white px-5 py-2 rounded-lg hover:bg-blue-600 transition shadow-sm"
+                                    >
+                                        Create Task
+                                    </button>
+                                </>
+                            ) }
+                        </div>
+                    </div>
+
+                    { !isAdmin && (
+                        <div className="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm px-4 py-3 rounded-xl">
+                            ⚠️ Only admins can create and manage tasks in this project.
+                        </div>
+                    ) }
+
+                    { project && (
+                        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm mb-8">
+                            <div className="flex items-center justify-between">
+
+                                <div>
+                                    <p className="text-xs uppercase tracking-wide text-gray-400 mb-2">
+                                        Current Project
+                                    </p>
+
+                                    <h2 className="text-xl font-semibold text-gray-900">
+                                        { project.name }
+                                    </h2>
+
+                                    <p className="text-sm text-gray-500 mt-1">
+                                        Organize tasks, collaborate with members, and track progress.
+                                    </p>
+                                </div>
+
+                                { isAdmin && (
+                                    <button
+                                        onClick={ () => { } }
+                                        className="text-red-500 hover:text-red-600 text-sm font-medium hover:underline"
+                                    >
+                                        Delete Project
+                                    </button>
+                                ) }
+
+                            </div>
+                        </div>
+                    ) }
+
+                    <div>
+                        <div className="flex items-center justify-between mb-4">
+
+                            <h2 className="text-xl font-semibold text-gray-900">
+                                Tasks
+                            </h2>
+
+                            <p className="text-sm text-gray-500">
+                                { tasks.length } task{ tasks.length !== 1 && 's' }
+                            </p>
+
+                        </div>
+
+                        { tasks.length === 0 ? (
+                            <div className="bg-white border border-dashed border-gray-300 rounded-2xl p-10 text-center">
+
+                                <p className="text-gray-500 mb-2">
+                                    No tasks yet
+                                </p>
+
+                                <p className="text-sm text-gray-400">
+                                    { isAdmin
+                                        ? 'Create your first task to get started.'
+                                        : 'You currently have no assigned tasks.' }
+                                </p>
+
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-4">
+
+
+
+                            </div>
+                        ) }
+                    </div>
+                </div>
             </div>
-        </div>
+            { showCreateTaskModel && (
+                <CreateTaskModel
+                    projectId={ project?.id }
+                    setShowCreateTaskModel={ setShowCreateTaskModel }
+                />
+            ) }
+            { showMembersModel && (
+                <showMembersModel
+                    projectId={ project?.id }
+                    setShowMembersModel={ setShowMembersModel }
+                />
+            ) }
+        </>
     )
 }
 
