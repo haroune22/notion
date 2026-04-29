@@ -130,6 +130,39 @@ export const getMyOrg = async (req, res) => {
   }
 }
 
+ export const getOrgMembers = async (req, res) => {
+
+  const userId = req.user._id
+  const orgId = req.params.id
+
+  try {
+    const isAdmin = await organizationMember.findOne({
+      user: userId,
+      organization: orgId,
+    })
+
+    if(!isAdmin){
+      return res.status(403).json({ message: 'not a member of this organization'})
+    }
+
+    if(isAdmin.role !== 'manager'){
+      return res.status(403).json({ message: 'only manager can view members'})
+    }
+
+    //get all organizationMembers
+    const orgMembers = await organizationMember.find({
+      organization: orgId,
+      role: { $ne: "manager" },
+    }).populate('user', 'name email')
+
+    return res.status(200).json({message: 'organization members retrieved', orgMembers})
+
+  } catch (error) {
+    res.status(500).json({message: 'internal server error'})
+    console.log(error)
+  }
+}
+
 export const CreateInvitation = async (req, res) => {
 
   const userId = req.user._id;

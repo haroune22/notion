@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import api from '../api/axios';
 import { useParams } from 'react-router-dom';
-import CreateTaskModel from '../components/CreateTaskModel';
+import MembersModal from '../components/MembersModel';
+import CreateTaskModal from '../components/CreateTaskModel';
 
 
 const Tasks = () => {
     const [ tasks, setTasks ] = useState( [] );
     const [ project, setProject ] = useState( null );
     const [ isAdmin, setIsAdmin ] = useState( false );
+    const [ orgMembers, setOrgMembers ] = useState( [] );
+    const [ projectMembers, setProjectMembers ] = useState( [] );
 
-    const [ showCreateTaskModel, setShowCreateTaskModel ] = useState( false )
-    const [ showMembersModel, setShowMembersModel ] = useState( false )
+    const [ showCreateTaskModal, setShowCreateTaskModal ] = useState( false )
+    const [ showMembersModal, setShowMembersModal ] = useState( false )
 
     const { projectId } = useParams();
 
@@ -20,6 +23,7 @@ const Tasks = () => {
                 const projectRes = await api.get( `/projects/${ projectId }` );
 
                 setProject( projectRes.data.project );
+                console.log( projectRes.data.project )
 
                 const admin = projectRes.data.isAdmin;
                 setIsAdmin( admin );
@@ -40,6 +44,28 @@ const Tasks = () => {
         getProjectAndTasks();
 
     }, [ projectId ] );
+
+    const handleMemberModal = async () => {
+        try {
+            const OrgRes = await api.get( `/organization/${ project.organization }/members` )
+            setOrgMembers( OrgRes.data.orgMembers );
+            const ProjectRes = await api.get( `/projects/${ projectId }/members` )
+            setProjectMembers( ProjectRes.data.projectMembers );
+            setShowMembersModal( true );
+        } catch ( error ) {
+            console.log( error )
+        }
+    }
+
+    const handleCreateTask = async () => {
+        try {
+            const res = await api.get( `/projects/${ projectId }/members` )
+            setProjectMembers( res.data.projectMembers );
+            setShowCreateTaskModal( true );
+        } catch ( error ) {
+            console.log( error )
+        }
+    }
 
     return (
         <>
@@ -62,13 +88,13 @@ const Tasks = () => {
                             { isAdmin && (
                                 <>
                                     <button
-                                        onClick={ () => setShowMembersModel( true ) }
+                                        onClick={ handleMemberModal }
                                         className="border border-gray-300 bg-white text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition"
                                     >
                                         Members
                                     </button>
                                     <button
-                                        onClick={ () => setShowCreateTaskModel( true ) }
+                                        onClick={ handleCreateTask }
                                         className="bg-blue-700 text-white px-5 py-2 rounded-lg hover:bg-blue-600 transition shadow-sm"
                                     >
                                         Create Task
@@ -152,16 +178,18 @@ const Tasks = () => {
                     </div>
                 </div>
             </div>
-            { showCreateTaskModel && (
-                <CreateTaskModel
-                    projectId={ project?.id }
-                    setShowCreateTaskModel={ setShowCreateTaskModel }
+            { showCreateTaskModal && (
+                <CreateTaskModal
+                    project={ project }
+                    setShowCreateTaskModal={ setShowCreateTaskModal }
+                    members={ projectMembers }
                 />
             ) }
-            { showMembersModel && (
-                <showMembersModel
-                    projectId={ project?.id }
-                    setShowMembersModel={ setShowMembersModel }
+            { showMembersModal && (
+                <MembersModal
+                    members={ orgMembers }
+                    project={ project }
+                    setShowMembersModal={ setShowMembersModal }
                 />
             ) }
         </>
