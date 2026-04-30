@@ -270,10 +270,10 @@ export const removeMemberFromProject = async (req, res) => {
 
   const userId = req.user._id
   const projectId = req.params.id
-  const { name, email } = req.body
+  const { email } = req.body
 
-  if(!name || !email) {
-    return res.status(400).json({ message: 'name and email are required'})
+  if(!email) {
+    return res.status(400).json({ message: 'email are required'})
   }
 
   try {
@@ -294,8 +294,7 @@ export const removeMemberFromProject = async (req, res) => {
 
     //first get the user
     const user = await User.findOne({
-      email,
-      name,
+      email
     })
     
     if(!user){

@@ -21,9 +21,8 @@ const Tasks = () => {
         const getProjectAndTasks = async () => {
             try {
                 const projectRes = await api.get( `/projects/${ projectId }` );
-
                 setProject( projectRes.data.project );
-                console.log( projectRes.data.project )
+                // console.log( projectRes.data.project )
 
                 const admin = projectRes.data.isAdmin;
                 setIsAdmin( admin );
@@ -49,8 +48,20 @@ const Tasks = () => {
         try {
             const OrgRes = await api.get( `/organization/${ project.organization }/members` )
             setOrgMembers( OrgRes.data.orgMembers );
+
             const ProjectRes = await api.get( `/projects/${ projectId }/members` )
             setProjectMembers( ProjectRes.data.projectMembers );
+
+            //extract project members ids
+            const projectIds = new Set( ProjectRes.data.projectMembers.map( m => m.user._id ) );
+            //format members to include isAssigned field
+            const formatMembers = OrgRes.data.orgMembers.map( m => ( {
+                ...m,
+                isAssigned: projectIds.has( m.user._id )
+            } ) );
+            setOrgMembers( formatMembers );
+            console.log( orgMembers )
+
             setShowMembersModal( true );
         } catch ( error ) {
             console.log( error )
@@ -183,6 +194,7 @@ const Tasks = () => {
                     project={ project }
                     setShowCreateTaskModal={ setShowCreateTaskModal }
                     members={ projectMembers }
+                    setMembers={ setProjectMembers }
                 />
             ) }
             { showMembersModal && (
@@ -190,6 +202,7 @@ const Tasks = () => {
                     members={ orgMembers }
                     project={ project }
                     setShowMembersModal={ setShowMembersModal }
+                    setMembers={ setOrgMembers }
                 />
             ) }
         </>

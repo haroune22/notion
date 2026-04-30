@@ -20,7 +20,7 @@ const Projects = () => {
 
         const getOrg = async () => {
             const res = await api.get( `/organization/me/${ orgId }` );
-            console.log( res.data );
+            // console.log( res.data );
             setOrgName( res.data.org.name );
             setIsAdmin( res.data.isAdmin );
         };

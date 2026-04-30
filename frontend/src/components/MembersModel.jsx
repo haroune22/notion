@@ -1,10 +1,40 @@
 import React from 'react'
+import api from '../api/axios'
 
 const MembersModal = ( {
     project,
     setShowMembersModal,
-    members
+    members,
+    setMembers
 } ) => {
+
+    const handleRemove = async ( email ) => {
+        try {
+            api.delete( `/projects/${ project._id }/removeMember`, {
+                data: { email }
+            } )
+            setMembers( prev =>
+                prev.map( m =>
+                    m.user.email === email ? { ...m, isAssigned: false } : m
+                )
+            )
+        } catch ( error ) {
+            console.log( error )
+        }
+    }
+
+    const handleAssign = async ( email ) => {
+        try {
+            api.post( `/projects/${ project._id }/addMember`, { email } )
+            setMembers( prev =>
+                prev.map( m =>
+                    m.user.email === email ? { ...m, isAssigned: true } : m
+                )
+            )
+        } catch ( error ) {
+            console.log( error )
+        }
+    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
@@ -31,7 +61,6 @@ const MembersModal = ( {
                     { members?.length > 0 ? (
                         members.map( ( member ) => {
                             // fake check for now
-                            const isAssigned = member.isAssigned
                             return (
                                 <div
                                     key={ member._id }
@@ -40,24 +69,26 @@ const MembersModal = ( {
                                     <div className="flex flex-col">
 
                                         <h3 className="font-medium text-gray-900">
-                                            { member.name || "Unknown User" }
+                                            { member.user.name || "Unknown User" }
                                         </h3>
 
                                         <p className="text-sm text-gray-500">
-                                            { member.email }
+                                            { member.user.email }
                                         </p>
 
                                     </div>
-                                    { isAssigned ? (
+                                    { member.isAssigned ? (
 
                                         <button
                                             className="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 transition text-sm font-medium hover:cursor-pointer"
+                                            onClick={ () => handleRemove( member.user.email ) }
                                         >
                                             Remove
                                         </button>
                                     ) : (
                                         <button
                                             className="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition text-sm font-medium hover:cursor-pointer"
+                                            onClick={ () => handleAssign( member.user.email ) }
                                         >
                                             Assign
                                         </button>
