@@ -60,7 +60,7 @@ const Tasks = () => {
                 isAssigned: projectIds.has( m.user._id )
             } ) );
             setOrgMembers( formatMembers );
-            console.log( orgMembers )
+            // console.log( orgMembers )
 
             setShowMembersModal( true );
         } catch ( error ) {
@@ -194,7 +194,7 @@ const Tasks = () => {
                     project={ project }
                     setShowCreateTaskModal={ setShowCreateTaskModal }
                     members={ projectMembers }
-                    setMembers={ setProjectMembers }
+                    setTasks={ setTasks }
                 />
             ) }
             { showMembersModal && (

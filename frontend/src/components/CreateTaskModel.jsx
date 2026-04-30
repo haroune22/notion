@@ -1,6 +1,40 @@
-import React from 'react'
+import React, { useState } from 'react'
+import api from '../api/axios'
 
-const CreateTaskModal = ( { project, setShowCreateTaskModal, members, setMembers } ) => {
+const CreateTaskModal = ( {
+    project,
+    setShowCreateTaskModal,
+    members,
+    setTasks
+} ) => {
+
+    const [ title, setTitle ] = useState( '' )
+    const [ description, setDescription ] = useState( '' )
+    const [ status, setStatus ] = useState( 'todo' )
+    const [ priority, setPriority ] = useState( 'low' )
+    const [ assignedTo, setAssignedTo ] = useState( '' )
+    const [ dueDate, setDueDate ] = useState( '' )
+
+    const handleCreateTask = async ( e ) => {
+        e.preventDefault();
+        if ( !assignedTo ) {
+            return;
+        }
+        try {
+            const res = await api.post( `/projects/${ project._id }/task`, {
+                title,
+                description,
+                priority,
+                assignedTo,
+                dueDate
+            } );
+            setTasks( prev => [ res.data.newTask, ...prev ] );
+            // console.log( res.data )
+            setShowCreateTaskModal( false );
+        } catch ( error ) {
+            console.log( error );
+        }
+    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-2">
@@ -23,11 +57,12 @@ const CreateTaskModal = ( { project, setShowCreateTaskModal, members, setMembers
                         ×
                     </button>
                 </div>
-                <form className="flex flex-col gap-2 p-4">
 
-                    {/* Task Name */ }
+                <form
+                    onSubmit={ handleCreateTask }
+                    className="flex flex-col gap-2 p-4"
+                >
                     <div className="flex flex-col gap-2">
-
                         <label className="text-sm font-medium text-gray-700">
                             Task Name
                         </label>
@@ -36,94 +71,95 @@ const CreateTaskModal = ( { project, setShowCreateTaskModal, members, setMembers
                             type="text"
                             placeholder="Design dashboard UI..."
                             className="border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={ title }
+                            onChange={ ( e ) => setTitle( e.target.value ) }
                         />
 
                     </div>
-
-                    {/* Description */ }
                     <div className="flex flex-col gap-2">
-
                         <label className="text-sm font-medium text-gray-700">
                             Description
                         </label>
-
                         <textarea
                             rows={ 3 }
                             placeholder="Describe the task..."
                             className="border border-gray-300 rounded-xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={ description }
+                            onChange={ ( e ) => setDescription( e.target.value ) }
                         />
 
                     </div>
 
-                    {/* Status + Priority */ }
                     <div className="grid grid-cols-2 gap-4">
-
-                        <div className="flex flex-col gap-2">
-
+                        {/* <div className="flex flex-col gap-2">
                             <label className="text-sm font-medium text-gray-700">
                                 Status
                             </label>
-
                             <select
                                 className="border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={ status }
+                                onChange={ ( e ) => setStatus( e.target.value ) }
                             >
                                 <option>Todo</option>
-                                <option>In Progress</option>
-                                <option>Completed</option>
+                                <option>pending</option>
+                                <option>done</option>
+                                <option>blocked</option>
                             </select>
 
-                        </div>
+                        </div> */}
 
                         <div className="flex flex-col gap-2">
-
                             <label className="text-sm font-medium text-gray-700">
                                 Priority
                             </label>
-
                             <select
                                 className="border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={ priority }
+                                onChange={ ( e ) => setPriority( e.target.value ) }
                             >
-                                <option>Low</option>
-                                <option>Medium</option>
-                                <option>High</option>
+                                <option>low</option>
+                                <option>medium</option>
+                                <option>high</option>
                             </select>
 
                         </div>
-
                     </div>
 
-                    {/* Assigned Member */ }
                     <div className="flex flex-col gap-2">
-
                         <label className="text-sm font-medium text-gray-700">
                             Assign To
                         </label>
-
                         <select
                             className="border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={ assignedTo }
+                            onChange={ ( e ) => setAssignedTo( e.target.value ) }
                         >
-                            <option>Select member</option>
-                        </select>
+                            <option value="">Select a member</option>
 
+                            { members.map( ( member ) => (
+                                <option
+                                    key={ member._id }
+                                    value={ member.user._id }
+                                >
+                                    { member.user.name || "Unknown User" }
+                                </option>
+                            ) ) }
+                        </select>
                     </div>
 
-                    {/* Due Date */ }
                     <div className="flex flex-col gap-2">
-
                         <label className="text-sm font-medium text-gray-700">
                             Due Date
                         </label>
-
                         <input
                             type="date"
                             className="border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={ dueDate }
+                            onChange={ ( e ) => setDueDate( e.target.value ) }
                         />
-
                     </div>
 
-                    {/* Buttons */ }
                     <div className="flex items-center justify-end gap-3 pt-2">
-
                         <button
                             type="button"
                             onClick={ () => setShowCreateTaskModal( false ) }
@@ -131,7 +167,6 @@ const CreateTaskModal = ( { project, setShowCreateTaskModal, members, setMembers
                         >
                             Cancel
                         </button>
-
                         <button
                             type="submit"
                             className="bg-blue-700 text-white px-5 py-2.5 rounded-xl hover:bg-blue-600 transition shadow-sm hover:cursor-pointer"
