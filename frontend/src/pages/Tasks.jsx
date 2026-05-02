@@ -3,9 +3,11 @@ import api from '../api/axios';
 import { useParams } from 'react-router-dom';
 import MembersModal from '../components/MembersModel';
 import CreateTaskModal from '../components/CreateTaskModel';
+import TasksList from '../components/TasksList';
 
 
 const Tasks = () => {
+
     const [ tasks, setTasks ] = useState( [] );
     const [ project, setProject ] = useState( null );
     const [ isAdmin, setIsAdmin ] = useState( false );
@@ -24,10 +26,13 @@ const Tasks = () => {
                 setProject( projectRes.data.project );
                 // console.log( projectRes.data.project )
 
+
                 const admin = projectRes.data.isAdmin;
                 setIsAdmin( admin );
 
                 if ( admin ) {
+                    const res = await api.get( `/projects/${ projectId }/members` )
+                    setProjectMembers( res.data.projectMembers );
                     const tasksRes = await api.get( `/projects/${ projectId }/tasks` );
                     setTasks( tasksRes.data.tasks );
                 } else {
@@ -60,7 +65,6 @@ const Tasks = () => {
                 isAssigned: projectIds.has( m.user._id )
             } ) );
             setOrgMembers( formatMembers );
-            // console.log( orgMembers )
 
             setShowMembersModal( true );
         } catch ( error ) {
@@ -70,8 +74,7 @@ const Tasks = () => {
 
     const handleCreateTask = async () => {
         try {
-            const res = await api.get( `/projects/${ projectId }/members` )
-            setProjectMembers( res.data.projectMembers );
+
             setShowCreateTaskModal( true );
         } catch ( error ) {
             console.log( error )
@@ -153,17 +156,6 @@ const Tasks = () => {
                     ) }
 
                     <div>
-                        <div className="flex items-center justify-between mb-4">
-
-                            <h2 className="text-xl font-semibold text-gray-900">
-                                Tasks
-                            </h2>
-
-                            <p className="text-sm text-gray-500">
-                                { tasks.length } task{ tasks.length !== 1 && 's' }
-                            </p>
-
-                        </div>
 
                         { tasks.length === 0 ? (
                             <div className="bg-white border border-dashed border-gray-300 rounded-2xl p-10 text-center">
@@ -181,9 +173,13 @@ const Tasks = () => {
                             </div>
                         ) : (
                             <div className="flex flex-col gap-4">
-
-
-
+                                <TasksList
+                                    tasks={ tasks }
+                                    isAdmin={ isAdmin }
+                                    setTasks={ setTasks }
+                                    projectMembers={ projectMembers }
+                                    project={ project }
+                                />
                             </div>
                         ) }
                     </div>

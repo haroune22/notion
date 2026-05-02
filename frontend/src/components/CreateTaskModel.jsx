@@ -10,7 +10,6 @@ const CreateTaskModal = ( {
 
     const [ title, setTitle ] = useState( '' )
     const [ description, setDescription ] = useState( '' )
-    const [ status, setStatus ] = useState( 'todo' )
     const [ priority, setPriority ] = useState( 'low' )
     const [ assignedTo, setAssignedTo ] = useState( '' )
     const [ dueDate, setDueDate ] = useState( '' )
@@ -66,7 +65,6 @@ const CreateTaskModal = ( {
                         <label className="text-sm font-medium text-gray-700">
                             Task Name
                         </label>
-
                         <input
                             type="text"
                             placeholder="Design dashboard UI..."
@@ -74,8 +72,8 @@ const CreateTaskModal = ( {
                             value={ title }
                             onChange={ ( e ) => setTitle( e.target.value ) }
                         />
-
                     </div>
+
                     <div className="flex flex-col gap-2">
                         <label className="text-sm font-medium text-gray-700">
                             Description
@@ -90,39 +88,20 @@ const CreateTaskModal = ( {
 
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        {/* <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium text-gray-700">
-                                Status
-                            </label>
-                            <select
-                                className="border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={ status }
-                                onChange={ ( e ) => setStatus( e.target.value ) }
-                            >
-                                <option>Todo</option>
-                                <option>pending</option>
-                                <option>done</option>
-                                <option>blocked</option>
-                            </select>
+                    <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium text-gray-700">
+                            Priority
+                        </label>
+                        <select
+                            className="border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={ priority }
+                            onChange={ ( e ) => setPriority( e.target.value ) }
+                        >
+                            <option>low</option>
+                            <option>medium</option>
+                            <option>high</option>
+                        </select>
 
-                        </div> */}
-
-                        <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium text-gray-700">
-                                Priority
-                            </label>
-                            <select
-                                className="border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={ priority }
-                                onChange={ ( e ) => setPriority( e.target.value ) }
-                            >
-                                <option>low</option>
-                                <option>medium</option>
-                                <option>high</option>
-                            </select>
-
-                        </div>
                     </div>
 
                     <div className="flex flex-col gap-2">

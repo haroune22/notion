@@ -8,7 +8,7 @@ export const getTask = async (req, res) => {
 
   try {
     // we could add verify if user is a projectMember but will keep this way because we are filtering by assignedTo:
-    const tasks = await Task.find({ assignedTo: userId });
+    const tasks = await Task.find({ assignedTo: userId }).populate('assignedTo', 'name email')
 
     if (!tasks || tasks.length === 0) {
       return res.status(404).json({ message: "no tasks found" });
@@ -37,7 +37,7 @@ export const getTasks = async (req, res) => {
 
     const tasks = await Task.find({
       project: projectId,
-    });
+    }).populate('assignedTo', 'name email')
 
     if (!tasks || tasks.length === 0) {
       return res.status(400).json({ message: "no tasks found" });
