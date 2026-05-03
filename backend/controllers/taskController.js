@@ -157,7 +157,8 @@ export const updateTaskByAdmin = async (req, res) => {
       status,
       priority,
       assignedTo
-    },{new: true})
+    }, { returnDocument: 'after' })
+    .populate('assignedTo', 'name email')
 
     return res.status(200).json({message: 'task updated', updatedTask})
 
@@ -191,7 +192,11 @@ export const updateTask = async (req, res) => {
 
     const updatedTask = await Task.findByIdAndUpdate(taskId, {
       status,
-    }, {new: true})
+    },{ 
+      returnDocument: 'after',
+      runValidators: true
+     })
+    .populate('assignedTo', 'name email')
 
     return res.status(200).json({message: 'task updated', updatedTask})
 

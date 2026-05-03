@@ -178,7 +178,7 @@ const Tasks = () => {
                                     isAdmin={ isAdmin }
                                     setTasks={ setTasks }
                                     projectMembers={ projectMembers }
-                                    project={ project }
+                                    projectId={ projectId }
                                 />
                             </div>
                         ) }

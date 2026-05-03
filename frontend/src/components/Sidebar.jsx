@@ -23,31 +23,37 @@ export const Sidebar = () => {
     ];
 
     return (
-        <div className="w-64 h-screen border-r border-gray-300 p-4">
-            <div className="flex items-center gap-3 border-b-2 border-gray-300 pb-2 mb-2">
-                <img src="/logo.png" alt="logo" className="w-10 h-10" />
-                <h3 className="text-lg font-semibold text-gray-800">
+        <div className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col">
+            <div className="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
+                <img src="/logo.png" alt="logo" className="w-9 h-9" />
+                <h3 className="text-lg font-semibold text-gray-900">
                     Motion
                 </h3>
             </div>
-            <div className="flex flex-col gap-6 mt-6">
+
+            <div className="flex flex-col gap-1 px-3 py-4">
                 { links.map( ( link, index ) => {
                     const isActive = location.pathname.includes( link.path );
-
                     return (
                         <Link
                             key={ index }
-                            className={ `flex items-center gap-3 px-4 py-2 rounded-lg transition 
-              ${ isActive
-                                    ? "bg-blue-100 text-blue-700"
-                                    : "hover:bg-gray-100"
-                                }` }
+                            to={ link.path }
+                            className={ `
+                                flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition
+                                ${ isActive
+                                    ? "bg-blue-50 text-blue-700 border border-blue-100"
+                                    : "text-gray-600 hover:bg-gray-100"
+                                }
+                            `}
                         >
-                            <span>{ link.icon }</span>
-                            <span className="font-medium">{ link.name }</span>
+                            <span className="text-base">{ link.icon }</span>
+                            { link.name }
                         </Link>
                     );
                 } ) }
+            </div>
+            <div className="mt-auto px-5 py-4 text-xs text-gray-400 border-t border-gray-100">
+                © { new Date().getFullYear() } Motion
             </div>
         </div>
     );
